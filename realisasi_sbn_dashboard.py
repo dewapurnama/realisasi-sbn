@@ -19,6 +19,7 @@ def download_and_upload():
     # Initialize the Chrome WebDriver
     options = webdriver.ChromeOptions()
     options.add_experimental_option("prefs", {"download.default_directory": "/tmp"})
+    options.add_argument('--headless')
     driver = webdriver.Chrome(options=options)
     
     # Navigate to the webpage
