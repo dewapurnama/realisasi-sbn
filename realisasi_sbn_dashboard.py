@@ -18,8 +18,10 @@ def authenticate_drive():
 def download_and_upload():
     # Initialize the Chrome WebDriver
     options = webdriver.ChromeOptions()
+    options.add_argument('--headless')  # Run in headless mode
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
     options.add_experimental_option("prefs", {"download.default_directory": "/tmp"})
-    options.add_argument('--headless')
     driver = webdriver.Chrome(options=options)
     
     # Navigate to the webpage
