@@ -1,82 +1,47 @@
-import streamlit as st
-import requests
-import tempfile
+import time
 import os
+import streamlit as st
 import pandas as pd
-from io import BytesIO
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
-def download_file():
-    url = "https://www.djppr.kemenkeu.go.id/ringkasanhasilpenerbitan"
-    
-    try:
-        # First, get the main page
-        response = requests.get(url)
-        response.raise_for_status()
+# Initialize the Chrome WebDriver with download options
+options = webdriver.ChromeOptions()
+download_path = "C:/Users/User/Downloads/"  # Change this to your download path
+prefs = {"download.default_directory": download_path}
+options.add_experimental_option("prefs", prefs)
 
-        # You might need to parse the HTML to find the actual download link
-        # For this example, let's assume the download link is directly available
-        # You may need to adjust this part based on the actual structure of the webpage
-        download_url = "https://www.djppr.kemenkeu.go.id/uploads/files/dmo_realisasi/2024/RHPSBNReguler2024.xlsx"
+driver = webdriver.Chrome(options=options)
+driver.maximize_window()
 
-        # Download the file
-        file_response = requests.get(download_url)
-        file_response.raise_for_status()
+# Navigate to the webpage
+driver.get("https://www.djppr.kemenkeu.go.id/ringkasanhasilpenerbitan")
 
-        # Create a temporary file
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as temp_file:
-            temp_file.write(file_response.content)
-            return temp_file.name
+# Wait for the "View" button to be clickable
+try:
+    wait = WebDriverWait(driver, 10)
+    view_button = wait.until(EC.presence_of_element_located((By.LINK_TEXT, "View")))
+    driver.execute_script("arguments[0].click();", view_button)
 
-    except requests.RequestException as e:
-        st.error(f"An error occurred: {e}")
-        return None
+    print("The 'View' button was clicked successfully using JavaScript.")
 
-def read_excel_file(file_path):
-    # Try different engines
-    engines = ['openpyxl', 'xlrd']
-    for engine in engines:
-        try:
-            return pd.read_excel(file_path, engine=engine)
-        except Exception as e:
-            st.warning(f"Failed to read with {engine}: {e}")
-    
-    # If all engines fail, try a more manual approach
-    try:
-        with open(file_path, 'rb') as file:
-            content = file.read()
-        return pd.read_excel(BytesIO(content))
-    except Exception as e:
-        st.error(f"All methods to read the Excel file failed: {e}")
-        return None
+    # Wait for the file to download
+    time.sleep(5)  # Adjust the time as necessary based on file size
 
-def main():
-    st.title("File Downloader and Viewer")
+    # Load the downloaded Excel file
+    files = os.listdir(download_path)
+    excel_file = [f for f in files if f.endswith('.xlsx') or f.endswith('.xls')]
 
-    if st.button("Download and Display File"):
-        with st.spinner("Downloading file..."):
-            file_path = download_file()
-        
-        if file_path:
-            st.success("File downloaded successfully!")
-            
-            # Read and display Excel file
-            df = read_excel_file(file_path)
-            if df is not None:
-                st.write("Excel file content (first few rows):")
-                st.dataframe(df.head())
-            else:
-                st.error("Failed to read the Excel file content.")
-            
-            # Option to download the file
-            with open(file_path, "rb") as file:
-                st.download_button(
-                    label="Download file",
-                    data=file,
-                    file_name=os.path.basename(file_path),
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                )
-        else:
-            st.error("Failed to download the file.")
+    if excel_file:
+        df = pd.read_excel(os.path.join(download_path, excel_file[0]), sheet_name="SBN", header=2) 
+    else:
+        print("No Excel file found in the download directory.")
 
-if __name__ == "__main__":
-    main()
+except Exception as e:
+    print(f"An error occurred: {e}")
+finally:
+    driver.quit()
+
+st.dataframe(df.head(100))
