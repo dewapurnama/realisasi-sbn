@@ -31,6 +31,24 @@ def download_file():
         st.error(f"An error occurred: {e}")
         return None
 
+def read_excel_file(file_path):
+    # Try different engines
+    engines = ['openpyxl', 'xlrd']
+    for engine in engines:
+        try:
+            return pd.read_excel(file_path, engine=engine)
+        except Exception as e:
+            st.warning(f"Failed to read with {engine}: {e}")
+    
+    # If all engines fail, try a more manual approach
+    try:
+        with open(file_path, 'rb') as file:
+            content = file.read()
+        return pd.read_excel(BytesIO(content))
+    except Exception as e:
+        st.error(f"All methods to read the Excel file failed: {e}")
+        return None
+
 def main():
     st.title("File Downloader and Viewer")
 
@@ -42,12 +60,12 @@ def main():
             st.success("File downloaded successfully!")
             
             # Read and display Excel file
-            try:
-                df = pd.read_excel(file_path)
+            df = read_excel_file(file_path)
+            if df is not None:
                 st.write("Excel file content (first few rows):")
                 st.dataframe(df.head())
-            except Exception as e:
-                st.error(f"Error reading the Excel file: {e}")
+            else:
+                st.error("Failed to read the Excel file content.")
             
             # Option to download the file
             with open(file_path, "rb") as file:
