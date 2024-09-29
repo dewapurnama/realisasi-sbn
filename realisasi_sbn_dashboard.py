@@ -1,55 +1,35 @@
 import streamlit as st
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+import requests
 import tempfile
 import os
-import time
+import pandas as pd
+from io import BytesIO
 
 def download_file():
-    # Set up Chrome options for headless mode
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    
-    # Set up the download path
-    download_path = tempfile.mkdtemp()
-    chrome_options.add_experimental_option("prefs", {
-        "download.default_directory": download_path,
-        "download.prompt_for_download": False,
-        "download.directory_upgrade": True,
-        "safebrowsing.enabled": True
-    })
-
-    # Initialize the Chrome WebDriver
-    driver = webdriver.Chrome(options=chrome_options)
+    url = "https://www.djppr.kemenkeu.go.id/ringkasanhasilpenerbitan"
     
     try:
-        # Navigate to the webpage
-        driver.get("https://www.djppr.kemenkeu.go.id/ringkasanhasilpenerbitan")
-        
-        # Wait for the "View" button to be clickable
-        wait = WebDriverWait(driver, 10)
-        view_button = wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "View")))
-        
-        # Click the button
-        view_button.click()
-        
-        # Wait for the file to be downloaded (adjust the time if needed)
-        time.sleep(5)
-        
-        # Find the downloaded file
-        downloaded_files = os.listdir(download_path)
-        if downloaded_files:
-            file_path = os.path.join(download_path, downloaded_files[0])
-            return file_path
-        else:
-            return None
-    finally:
-        driver.quit()
+        # First, get the main page
+        response = requests.get(url)
+        response.raise_for_status()
+
+        # You might need to parse the HTML to find the actual download link
+        # For this example, let's assume the download link is directly available
+        # You may need to adjust this part based on the actual structure of the webpage
+        download_url = "https://www.djppr.kemenkeu.go.id/uploads/files/dmo_realisasi/2024/RHPSBNReguler2024.xlsx"
+
+        # Download the file
+        file_response = requests.get(download_url)
+        file_response.raise_for_status()
+
+        # Create a temporary file
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as temp_file:
+            temp_file.write(file_response.content)
+            return temp_file.name
+
+    except requests.RequestException as e:
+        st.error(f"An error occurred: {e}")
+        return None
 
 def main():
     st.title("File Downloader and Viewer")
@@ -61,20 +41,13 @@ def main():
         if file_path:
             st.success("File downloaded successfully!")
             
-            # Determine file type and display accordingly
-            file_extension = os.path.splitext(file_path)[1].lower()
-            
-            if file_extension in ['.xlsx', '.xls']:
-                st.write("Excel file detected. Displaying first few rows:")
-                import pandas as pd
+            # Read and display Excel file
+            try:
                 df = pd.read_excel(file_path)
+                st.write("Excel file content (first few rows):")
                 st.dataframe(df.head())
-            elif file_extension == '.pdf':
-                st.write("PDF file detected. Displaying file info:")
-                st.write(f"File path: {file_path}")
-                st.write(f"File size: {os.path.getsize(file_path)} bytes")
-            else:
-                st.write("File downloaded. Unable to display content.")
+            except Exception as e:
+                st.error(f"Error reading the Excel file: {e}")
             
             # Option to download the file
             with open(file_path, "rb") as file:
@@ -82,7 +55,7 @@ def main():
                     label="Download file",
                     data=file,
                     file_name=os.path.basename(file_path),
-                    mime="application/octet-stream"
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
         else:
             st.error("Failed to download the file.")
