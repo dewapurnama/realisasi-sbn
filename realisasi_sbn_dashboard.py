@@ -27,7 +27,7 @@ def download_and_upload():
     driver.get("https://www.djppr.kemenkeu.go.id/ringkasanhasilpenerbitan")
     
     # Wait for the "View" button to be clickable
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(driver, 30)
     view_button = wait.until(EC.presence_of_element_located((By.LINK_TEXT, "View")))
     driver.execute_script("arguments[0].click();", view_button)
 
