@@ -33,7 +33,7 @@ def download_and_upload():
         time.sleep(5)
         
         # Find all "View" buttons
-        view_buttons = driver.find_elements(By.LINK_TEXT, "View")
+        view_buttons = wait.until(EC.presence_of_element_located((By.LINK_TEXT, "View")))
         
         if view_buttons:
             # Click the first (most recent) "View" button
