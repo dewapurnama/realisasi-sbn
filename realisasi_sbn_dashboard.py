@@ -31,13 +31,14 @@ def download_and_upload():
         
         # Wait for the page to load
         time.sleep(5)
+        wait = WebDriverWait(driver, 10)
         
-        # Find all "View" buttons
-        view_buttons = wait.until(EC.presence_of_element_located((By.LINK_TEXT, "View")))
+        # Locate the "View" button (adjust the selector as necessary)
+        view_button = wait.until(EC.presence_of_element_located((By.LINK_TEXT, "View")))
         
+        # Use JavaScript to click the button
         if view_buttons:
-            # Click the first (most recent) "View" button
-            driver.execute_script("arguments[0].click();", view_buttons[0])
+            driver.execute_script("arguments[0].click();", view_button)
             st.success("Clicked on the most recent 'View' button.")
         else:
             st.error("No 'View' buttons found on the page.")
