@@ -1,4 +1,5 @@
-gdown
+pydrive
 pandas
 openpyxl
 streamlit
+selenium
