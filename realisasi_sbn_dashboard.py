@@ -19,7 +19,7 @@ def authenticate_drive():
 def download_and_upload():
     # Initialize the Chrome WebDriver
     options = webdriver.ChromeOptions()
-    options.add_argument('--headless')  # Run in headless mode
+    options.add_argument('--headless')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     options.add_experimental_option("prefs", {"download.default_directory": "/tmp"})
@@ -30,29 +30,25 @@ def download_and_upload():
         driver.get("https://www.djppr.kemenkeu.go.id/ringkasanhasilpenerbitan")
         
         # Wait for the page to load
-        time.sleep(10)  # Increased wait time
+        time.sleep(5)
         
-        # Try different methods to locate the "View" button
-        try:
-            view_button = WebDriverWait(driver, 30).until(
-                EC.element_to_be_clickable((By.LINK_TEXT, "View"))
-            )
-        except TimeoutException:
-            try:
-                view_button = driver.find_element(By.XPATH, "//a[contains(text(), 'View')]")
-            except NoSuchElementException:
-                try:
-                    view_button = driver.find_element(By.CSS_SELECTOR, "a[href*='RHPSBNReguler']")
-                except NoSuchElementException:
-                    st.error("Could not find the 'View' button. The page structure might have changed.")
-                    return
-
-        # Click the button
-        driver.execute_script("arguments[0].click();", view_button)
+        # Find all "View" buttons
+        view_buttons = driver.find_elements(By.LINK_TEXT, "View")
+        
+        if view_buttons:
+            # Click the first (most recent) "View" button
+            driver.execute_script("arguments[0].click();", view_buttons[0])
+            st.success("Clicked on the most recent 'View' button.")
+        else:
+            st.error("No 'View' buttons found on the page.")
+            return
         
         # Wait for the file to download
-        time.sleep(10)  # Increased wait time
+        time.sleep(10)  # Adjust this time as needed
     
+    except Exception as e:
+        st.error(f"An error occurred: {str(e)}")
+        return
     finally:
         driver.quit()
 
