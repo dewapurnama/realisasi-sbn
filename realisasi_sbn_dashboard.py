@@ -1,47 +1,58 @@
 import time
-import os
-import streamlit as st
 import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
 
-# Initialize the Chrome WebDriver with download options
-options = webdriver.ChromeOptions()
-download_path = "C:/Users/User/Downloads/"  # Change this to your download path
-prefs = {"download.default_directory": download_path}
-options.add_experimental_option("prefs", prefs)
+def authenticate_drive():
+    gauth = GoogleAuth()
+    gauth.LocalWebserverAuth()  # Creates a local webserver for authentication
+    drive = GoogleDrive(gauth)
+    return drive
 
-driver = webdriver.Chrome(options=options)
-driver.maximize_window()
-
-# Navigate to the webpage
-driver.get("https://www.djppr.kemenkeu.go.id/ringkasanhasilpenerbitan")
-
-# Wait for the "View" button to be clickable
-try:
+def download_and_upload():
+    # Initialize the Chrome WebDriver
+    options = webdriver.ChromeOptions()
+    options.add_argument('--headless')  # Run in headless mode
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_experimental_option("prefs", {"download.default_directory": "/tmp"})
+    driver = webdriver.Chrome(options=options)
+    
+    # Navigate to the webpage
+    driver.get("https://www.djppr.kemenkeu.go.id/ringkasanhasilpenerbitan")
+    
+    # Wait for the "View" button to be clickable
     wait = WebDriverWait(driver, 10)
     view_button = wait.until(EC.presence_of_element_located((By.LINK_TEXT, "View")))
     driver.execute_script("arguments[0].click();", view_button)
 
-    print("The 'View' button was clicked successfully using JavaScript.")
-
     # Wait for the file to download
-    time.sleep(5)  # Adjust the time as necessary based on file size
+    time.sleep(5)  # Adjust as necessary
+    driver.quit()
 
-    # Load the downloaded Excel file
-    files = os.listdir(download_path)
+    # Upload to Google Drive
+    drive = authenticate_drive()
+    files = os.listdir("/tmp")
     excel_file = [f for f in files if f.endswith('.xlsx') or f.endswith('.xls')]
 
     if excel_file:
-        df = pd.read_excel(os.path.join(download_path, excel_file[0]), sheet_name="SBN", header=2) 
+        file_drive = drive.CreateFile({'title': excel_file[0]})
+        file_drive.SetContentFile(os.path.join("/tmp", excel_file[0]))
+        file_drive.Upload()
+        print(f"Uploaded {excel_file[0]} to Google Drive.")
     else:
         print("No Excel file found in the download directory.")
 
-except Exception as e:
-    print(f"An error occurred: {e}")
-finally:
-    driver.quit()
+def main():
+    st.title("Download and Upload Excel File to Google Drive")
+    
+    if st.button("Download and Upload"):
+        download_and_upload()
+        st.success("File downloaded and uploaded to Google Drive!")
 
-st.dataframe(df.head(100))
+if __name__ == "__main__":
+    main()
