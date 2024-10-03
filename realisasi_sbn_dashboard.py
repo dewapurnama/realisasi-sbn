@@ -40,6 +40,16 @@ df = df[(df["Tanggal Setelmen/Settlement Date"]>= date1) & (df["Tanggal Setelmen
 
 st.sidebar.header("Choose your filter: ")
 kategori  = st.sidebar.multiselect("Pilih kategori", df["Kategori"].unique())
+if not kategori:
+  df2 = df.copy()
+else:
+  df2 = df[df["Kategori"].isin(region)]
+
+series = st.sidebar.multiselect("Pick the State", df2["Seri/Series"].unique())
+if not series:
+  df3 = df2.copy()
+else:
+  df3 = df2[df2["State"].isin(state)]
 
 # Display the DataFrame
 #st.write(f"Menampilkan {min(len(df), 100)} baris pertama dari total {len(df)} baris.")
