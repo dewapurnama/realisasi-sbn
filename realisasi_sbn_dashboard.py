@@ -82,9 +82,9 @@ with col1:
   st.plotly_chart(fig, use_container_width=True, height=200)
 
 # Convert 'WAY Awarded' to numeric, forcing non-numeric values to NaN, then filling NaN with 0
-filtered_df["WAY Awarded"] = pd.to_numeric(filtered_df["WAY Awarded"], errors='coerce').fillna(0)
+filtered_df["WAY Awarded"] = pd.to_numeric(filtered_df["WAY Awarded"], errors='coerce')
 filtered_df_way = filtered_df[filtered_df["WAY Awarded"] != 1]
-way_by_series = filtered_df_way.groupby(by=["Seri/Series"], as_index=False)["WAY Awarded"].mean()
+way_by_series = filtered_df_way.groupby(by=["Seri/Series"])["WAY Awarded"].mean().reset_index()
 way_by_series["WAY Awarded"] = pd.to_numeric(way_by_series["WAY Awarded"], errors='coerce')
 
 # Sort the DataFrame by 'WAY Awarded' in ascending order
