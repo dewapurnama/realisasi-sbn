@@ -51,6 +51,15 @@ if not series:
 else:
   df3 = df2[df2["Seri/Series"].isin(series)]
 
+if not kategori and not series:
+  filtered_df = df
+elif not series:
+  filtered_df = df[df["Kategori"].isin(kategori)]
+elif not kategori:
+  filtered_df = df[df["Seri/Series"].isin(series)]
+else:
+  filtered_df = df3[df3["Kategori"].isin(kategori) & df3["Seri/Series"].isin(series)]
+
 # Display the DataFrame
 #st.write(f"Menampilkan {min(len(df), 100)} baris pertama dari total {len(df)} baris.")
 st.dataframe(df.head(100))
