@@ -43,7 +43,7 @@ kategori  = st.sidebar.multiselect("Kategori", df["Kategori"].unique())
 if not kategori:
   df2 = df.copy()
 else:
-  df2 = df[df["Kategori"].isin(kategori]
+  df2 = df[df["Kategori"].isin(kategori)]
 
 series = st.sidebar.multiselect("Series", df2["Seri/Series"].unique())
 if not series:
