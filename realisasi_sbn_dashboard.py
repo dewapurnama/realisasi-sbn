@@ -13,6 +13,7 @@ from pydrive.drive import GoogleDrive
 
 st.set_page_config(page_title="Realisasi SBN", page_icon=":bar_chart:",layout="wide")
 st.title(":bar_chart: Dashboard Realisasi SBN DJPPR")
+st.markdown('<style>div.block-container{padding-top:1rem;}</style', unsafe_allow_html=True)
 
 # Replace the following URL with your own Google Drive file shareable link
 url = 'https://drive.google.com/uc?id=1mtKjIYLvxmBClIx2qeZ7KGXW0dGcEFjU'
