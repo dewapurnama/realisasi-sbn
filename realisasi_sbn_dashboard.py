@@ -93,10 +93,10 @@ top10_way_by_series = way_by_series.sort_values(by="WAY Awarded", ascending=Fals
 with col2:
     st.subheader("WAY Awarded by Series")
     fig = px.bar(
-        way_by_series_sorted, 
+        top10_way_by_series, 
         x="WAY Awarded", 
         y="Seri/Series", 
-        text=[f'{x:.4f}' for x in way_by_series_sorted["WAY Awarded"]],
+        text=[f'{x:.4f}' for x in top10_way_by_series["WAY Awarded"]],
         template="seaborn", 
         orientation="h"
     )
