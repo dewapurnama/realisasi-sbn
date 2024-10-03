@@ -106,9 +106,6 @@ top10_way_by_series = way_by_series.sort_values(by="WAY Awarded", ascending=Fals
 
 import plotly.graph_objects as go
 
-import plotly.graph_objects as go
-import pandas as pd
-
 # Ensure the date column is in datetime format
 filtered_df['Tanggal Setelmen/Settlement Date'] = pd.to_datetime(filtered_df['Tanggal Setelmen/Settlement Date'], errors='coerce')
 
@@ -132,42 +129,61 @@ bids_by_month = bids_by_month.sort_values('Month')
 month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 bids_by_month['Month_Name'] = bids_by_month['Month'].apply(lambda x: month_names[x-1])
 
+# Calculate the Bid to Cover Ratio for each month and add it to bids_by_month
+bids_by_month['Bid to cover ratio'] = bids_by_month["Total Penawaran/ Incoming Bid"] / bids_by_month["Total Penawaran Diterima/ Awarded Bid"]
+bids_by_month['Bid to cover ratio'] = bids_by_month['Bid to cover ratio'].fillna(0)  # Replace NaN with 0 if any division by zero occurs
+
 with col2:
-  fig = go.Figure(data=[
-    go.Bar(name='Incoming Bid', x=bids_by_month["Month_Name"], y=bids_by_month["Total Penawaran/ Incoming Bid"]),
-    go.Bar(name='Awarded Bid', x=bids_by_month["Month_Name"], y=bids_by_month["Total Penawaran Diterima/ Awarded Bid"])
-  ])
-  # Change the bar mode and update layout
-  fig.update_layout(
-    barmode='group',
-    title="Monthly Incoming vs Awarded Bids (Aggregated Across Years)",
-    xaxis_title="Month",
-    yaxis_title="Bid Amount",
-    legend_title="Bid Type",
-    height=500,  # Adjust this value to change the height of the chart
-    xaxis={'categoryorder':'array', 'categoryarray':month_names},  # This ensures correct month order
-    legend=dict(
-        orientation="h",  # Horizontal legend
-        yanchor="bottom",  # Anchor the legend at the bottom of the space allocated to the legend
-        y=1,  # Place it at the top (y=1 means top, y=0 is bottom)
-        xanchor="center",  # Center the legend horizontally
-        x=0.5  # Place it in the center of the x-axis
-    )
-  )
-  # Add value labels on the bars
-  for trace in fig.data:
-    y_values = trace.y
-    text_positions = ['top center' if y >= 0 else 'bottom center' for y in y_values]
+    # Create the figure with the two bar traces
+    fig = go.Figure(data=[
+        go.Bar(name='Incoming Bid', x=bids_by_month["Month_Name"], y=bids_by_month["Total Penawaran/ Incoming Bid"]),
+        go.Bar(name='Awarded Bid', x=bids_by_month["Month_Name"], y=bids_by_month["Total Penawaran Diterima/ Awarded Bid"]),
+        # Add a line trace for average Bid to Cover Ratio
+        go.Scatter(
+            name='Average Bid to Cover Ratio',
+            x=bids_by_month["Month_Name"],
+            y=bids_by_month["Bid to cover ratio"],  # Use the Bid to Cover Ratio for the y-values
+            mode='lines+markers',  # Display as line with markers
+            line=dict(color='red', width=2),  # Customize the line color and width
+            marker=dict(size=8)  # Customize the marker size
+        )
+    ])
     
-    fig.add_traces(go.Scatter(
-        x=trace.x, 
-        y=y_values,
-        mode='text',
-        text=[f'{y:,.0f}' for y in y_values],
-        textposition=text_positions,
-        showlegend=False
-    ))
-  st.plotly_chart(fig, use_container_width=True)
+    # Update layout (group bars and add titles)
+    fig.update_layout(
+        barmode='group',
+        title="Monthly Incoming vs Awarded Bids (Aggregated Across Years)",
+        xaxis_title="Month",
+        yaxis_title="Bid Amount",
+        legend_title="Bid Type",
+        height=500,  # Adjust height of the chart
+        xaxis={'categoryorder':'array', 'categoryarray':month_names},  # Ensure correct month order
+        legend=dict(
+            orientation="h",  # Horizontal legend
+            yanchor="bottom",  # Anchor the legend at the bottom of the space allocated to the legend
+            y=1,  # Place it at the top (y=1 means top, y=0 is bottom)
+            xanchor="center",  # Center the legend horizontally
+            x=0.5  # Place it in the center of the x-axis
+        )
+    )
+    
+    # Add value labels on the bars
+    for trace in fig.data:
+        y_values = trace.y
+        text_positions = ['top center' if y >= 0 else 'bottom center' for y in y_values]
+        
+        # Add text annotations for each bar
+        fig.add_traces(go.Scatter(
+            x=trace.x, 
+            y=y_values,
+            mode='text',
+            text=[f'{y:,.0f}' for y in y_values],
+            textposition=text_positions,
+            showlegend=False  # Disable legend for text labels
+        ))
+
+    # Display the chart after all traces are added
+    st.plotly_chart(fig, use_container_width=True)
   
 # Display the DataFrame
 #st.write(f"Menampilkan {min(len(df), 100)} baris pertama dari total {len(df)} baris.")
