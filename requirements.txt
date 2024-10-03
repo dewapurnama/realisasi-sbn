@@ -4,3 +4,4 @@ openpyxl
 streamlit
 selenium
 gdown
+plotly.express
