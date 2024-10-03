@@ -75,7 +75,7 @@ with col1:
     x="Seri/Series", 
     y="Total Penawaran/ Incoming Bid", 
     text=[f'{x:,.2f}' for x in top10_incoming_by_series["Total Penawaran/ Incoming Bid"]],
-    template="seaborn"# Format as currency with commas and 2 decimal places
+    template="seaborn", orientation="v"
   )
   st.plotly_chart(fig, use_container_width=True, height=200)
 
