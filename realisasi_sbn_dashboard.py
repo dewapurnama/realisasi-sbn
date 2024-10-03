@@ -63,3 +63,4 @@ else:
 # Display the DataFrame
 #st.write(f"Menampilkan {min(len(df), 100)} baris pertama dari total {len(df)} baris.")
 st.dataframe(df.head(100))
+st.dataframe(filtered_df.head(100))
