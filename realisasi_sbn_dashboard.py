@@ -63,14 +63,16 @@ else:
 
 incoming_by_series = filtered_df.groupby(by = ["Seri/Series"], as_index = False)["Total Penawaran/ Incoming Bid"].sum()
 incoming_by_series["Total Penawaran/ Incoming Bid"] = pd.to_numeric(incoming_by_series["Total Penawaran/ Incoming Bid"], errors='coerce')
+# Sort the DataFrame by 'Total Penawaran/ Incoming Bid' in descending order and select the top 10
+top10_incoming_by_series = incoming_by_series.sort_values(by="Total Penawaran/ Incoming Bid", ascending=False).head(10)
 
 with col1:
   st.subheader("Incoming Bid by Series")
   fig = px.bar(
-    incoming_by_series, 
+    top10_incoming_by_series, 
     x="Seri/Series", 
     y="Total Penawaran/ Incoming Bid", 
-    text=[f'{x:,.2f}' for x in incoming_by_series["Total Penawaran/ Incoming Bid"]],
+    text=[f'{x:,.2f}' for x in top10_incoming_by_series["Total Penawaran/ Incoming Bid"]],
     template="seaborn"# Format as currency with commas and 2 decimal places
   )
   st.plotly_chart(fig, use_container_width=True, height=200)
