@@ -147,12 +147,14 @@ with col2:
   )
   # Add value labels on the bars
   for trace in fig.data:
+    y_values = trace.y
+    text_positions = ['top center' if y >= 0 else 'bottom center' for y in y_values]
     fig.add_traces(go.Scatter(
         x=[b for b in trace.x], 
         y=trace.y,
         mode='text',
         text=[f'{y:,.0f}' for y in trace.y],
-        textposition='outside',
+        textposition=text_positions,
         showlegend=False
     ))
     st.plotly_chart(fig, use_container_width=True)
