@@ -60,6 +60,14 @@ elif not kategori:
 else:
   filtered_df = df3[df3["Kategori"].isin(kategori) & df3["Seri/Series"].isin(series)]
 
+incoming_by_series = filtered_df.groupby(by = ["Seri/Series"], as_index = False)["Total Penawaran/ Incoming Bid"].sum()
+
+with col1:
+  st.subheader("Incoming Bid by Series")
+  fig = px.bar(incoming_by_series, x="Seri/Series", y="Total Penawaran/ Incoming Bid", text=['$:,.2f'].format(x) for x in incoming_by_series["Total Penawaran/ Incoming Bid"],
+               template = "seaborn")
+  st.plotly_chart(fig, use_container_width=True, height=200)
+
 # Display the DataFrame
 #st.write(f"Menampilkan {min(len(df), 100)} baris pertama dari total {len(df)} baris.")
 st.dataframe(df.head(100))
