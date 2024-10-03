@@ -28,7 +28,7 @@ df = pd.read_excel(output)
 #filter tanggal
 col1, col2 = st.columns((2))
 df["Tanggal Setelmen/Settlement Date"] = pd.to_datetime(df["Tanggal Setelmen/Settlement Date"])
-startDate = pd.to_datetime('2024-01-01')
+startDate = pd.to_datetime('2023-01-01')
 endDate = pd.to_datetime(df["Tanggal Setelmen/Settlement Date"]).max()
 
 with col1:
@@ -39,17 +39,17 @@ with col2:
 df = df[(df["Tanggal Setelmen/Settlement Date"]>= date1) & (df["Tanggal Setelmen/Settlement Date"] <= date2)].copy()
 
 st.sidebar.header("Choose your filter: ")
-kategori  = st.sidebar.multiselect("Pilih kategori", df["Kategori"].unique())
+kategori  = st.sidebar.multiselect("Kategori", df["Kategori"].unique())
 if not kategori:
   df2 = df.copy()
 else:
-  df2 = df[df["Kategori"].isin(region)]
+  df2 = df[df["Kategori"].isin(kategori]
 
-series = st.sidebar.multiselect("Pick the State", df2["Seri/Series"].unique())
+series = st.sidebar.multiselect("Series", df2["Seri/Series"].unique())
 if not series:
   df3 = df2.copy()
 else:
-  df3 = df2[df2["State"].isin(state)]
+  df3 = df2[df2["State"].isin(series)]
 
 # Display the DataFrame
 #st.write(f"Menampilkan {min(len(df), 100)} baris pertama dari total {len(df)} baris.")
