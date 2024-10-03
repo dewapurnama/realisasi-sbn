@@ -63,7 +63,7 @@ else:
 
 # Convert 'Total Penawaran/ Incoming Bid' to numeric, forcing non-numeric values to NaN, then filling NaN with 0
 filtered_df["Total Penawaran/ Incoming Bid"] = pd.to_numeric(filtered_df["Total Penawaran/ Incoming Bid"], errors='coerce')
-incoming_by_series = filtered_df.groupby(by = ["Seri/Series"], as_index = False)["Total Penawaran/ Incoming Bid"].sum()
+incoming_by_series = filtered_df.groupby(by = ["Seri/Series"])["Total Penawaran/ Incoming Bid"].sum().reset_index()
 incoming_by_series["Total Penawaran/ Incoming Bid"] = pd.to_numeric(incoming_by_series["Total Penawaran/ Incoming Bid"], errors='coerce')
 # Sort the DataFrame by 'Total Penawaran/ Incoming Bid' in descending order and select the top 10
 top10_incoming_by_series = incoming_by_series.sort_values(by="Total Penawaran/ Incoming Bid", ascending=False).head(10)
