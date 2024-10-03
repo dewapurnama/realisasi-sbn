@@ -10,67 +10,16 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 
-def authenticate_drive():
-    gauth = GoogleAuth()
-    gauth.LocalWebserverAuth()  # Creates a local webserver for authentication
-    drive = GoogleDrive(gauth)
-    return drive
+# Replace the following URL with your own Google Drive file shareable link
+url = 'https://drive.google.com/uc?id=1mtKjIYLvxmBClIx2qeZ7KGXW0dGcEFjU'
 
-def download_and_upload():
-    # Initialize the Chrome WebDriver
-    options = webdriver.ChromeOptions()
-    options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_experimental_option("prefs", {"download.default_directory": "/tmp"})
-    driver = webdriver.Chrome(options=options)
-    
-    try:
-        # Navigate to the webpage
-        driver.get("https://www.djppr.kemenkeu.go.id/ringkasanhasilpenerbitan")
-        
-        # Wait for the page to load
-        time.sleep(5)
-        wait = WebDriverWait(driver, 10)
-        
-        # Locate the "View" button (adjust the selector as necessary)
-        view_button = wait.until(EC.presence_of_element_located((By.LINK_TEXT, "View")))
-        
-        # Use JavaScript to click the button
-        if view_buttons:
-            driver.execute_script("arguments[0].click();", view_button)
-            st.success("Clicked on the most recent 'View' button.")
-        else:
-            st.error("No 'View' buttons found on the page.")
-            return
-        
-        # Wait for the file to download
-        time.sleep(10)  # Adjust this time as needed
-    
-    except Exception as e:
-        st.error(f"An error occurred: {str(e)}")
-        return
-    finally:
-        driver.quit()
+# Download the file
+output = 'realisasi_sbn_hingga_2023.xlsx'
+gdown.download(url, output, quiet=False)
 
-    # Upload to Google Drive
-    drive = authenticate_drive()
-    files = os.listdir("/tmp")
-    excel_file = [f for f in files if f.endswith('.xlsx') or f.endswith('.xls')]
-    if excel_file:
-        file_drive = drive.CreateFile({'title': excel_file[0]})
-        file_drive.SetContentFile(os.path.join("/tmp", excel_file[0]))
-        file_drive.Upload()
-        st.success(f"Uploaded {excel_file[0]} to Google Drive.")
-    else:
-        st.error("No Excel file found in the download directory.")
+# Read the Excel file into a pandas DataFrame
+df = pd.read_excel(output)
 
-def main():
-    st.title("Download and Upload Excel File to Google Drive")
-    
-    if st.button("Download and Upload"):
-        with st.spinner("Downloading and uploading file..."):
-            download_and_upload()
-
-if __name__ == "__main__":
-    main()
+# Display the DataFrame
+st.write(f"Menampilkan {min(len(df), 100)} baris pertama dari total {len(df)} baris.")
+st.dataframe(df.head(100))
