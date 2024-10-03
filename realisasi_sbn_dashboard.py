@@ -88,7 +88,7 @@ way_by_series = filtered_df_way.groupby(by=["Seri/Series"], as_index=False)["WAY
 way_by_series["WAY Awarded"] = pd.to_numeric(way_by_series["WAY Awarded"], errors='coerce')
 
 # Sort the DataFrame by 'WAY Awarded' in ascending order
-way_by_series_sorted = way_by_series.sort_values(by="WAY Awarded", ascending=True)
+top10_way_by_series = way_by_series.sort_values(by="WAY Awarded", ascending=False).head(10)
 
 with col2:
     st.subheader("WAY Awarded by Series")
