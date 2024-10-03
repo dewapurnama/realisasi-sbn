@@ -10,6 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
+import plotly.express as px
 
 st.set_page_config(page_title="Realisasi SBN", page_icon=":bar_chart:",layout="wide")
 st.title(":bar_chart: Dashboard Realisasi SBN DJPPR")
