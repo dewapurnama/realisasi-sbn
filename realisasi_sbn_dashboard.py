@@ -83,23 +83,26 @@ with col1:
 
 # Convert 'WAY Awarded' to numeric, forcing non-numeric values to NaN, then filling NaN with 0
 filtered_df["WAY Awarded"] = pd.to_numeric(filtered_df["WAY Awarded"], errors='coerce').fillna(0)
-way_by_series = filtered_df.groupby(by = ["Seri/Series"], as_index = False)["WAY Awarded"].mean()
+filtered_df_way = filtered_df[filtered_df["WAY Awarded"] != 1]
+way_by_series = filtered_df_way.groupby(by=["Seri/Series"], as_index=False)["WAY Awarded"].mean()
 way_by_series["WAY Awarded"] = pd.to_numeric(way_by_series["WAY Awarded"], errors='coerce')
-# Sort the DataFrame by 'WAY Awarded' in descending order and select the top 10
-top10_way_by_series = way_by_series.sort_values(by="WAY Awarded", ascending=False).head(10)
+
+# Sort the DataFrame by 'WAY Awarded' in ascending order
+way_by_series_sorted = way_by_series.sort_values(by="WAY Awarded", ascending=True)
 
 with col2:
-  st.subheader("WAY Awarded by Series")
-  fig = px.bar(
-    top10_way_by_series, 
-    x="WAY Awarded", 
-    y="Seri/Series", 
-    text=[f'{x:,.2f}' for x in top10_way_by_series["WAY Awarded"]],
-    template="seaborn", orientation="h"
-  )
-  # Reverse the y-axis
-  fig.update_layout(yaxis={'categoryorder':'total ascending'})
-  st.plotly_chart(fig, use_container_width=True, height=200)
+    st.subheader("WAY Awarded by Series")
+    fig = px.bar(
+        way_by_series_sorted, 
+        x="WAY Awarded", 
+        y="Seri/Series", 
+        text=[f'{x:.4f}' for x in way_by_series_sorted["WAY Awarded"]],
+        template="seaborn", 
+        orientation="h"
+    )
+    
+    fig.update_layout(yaxis={'categoryorder':'total ascending'})
+    st.plotly_chart(fig, use_container_width=True, height=200)
   
 # Display the DataFrame
 #st.write(f"Menampilkan {min(len(df), 100)} baris pertama dari total {len(df)} baris.")
