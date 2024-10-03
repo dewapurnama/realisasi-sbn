@@ -19,7 +19,7 @@ st.markdown('<style>div.block-container{padding-top:1rem;}</style', unsafe_allow
 url = 'https://drive.google.com/uc?id=1mtKjIYLvxmBClIx2qeZ7KGXW0dGcEFjU'
 
 # Download the file
-output = 'realisasi_sbn_hingga_2023.xlsx'
+output = 'realisasi_sbn_sampai_2023.xlsx'
 gdown.download(url, output, quiet=False)
 
 # Read the Excel file into a pandas DataFrame
@@ -37,6 +37,9 @@ with col2:
   date2 = pd.to_datetime(st.date_input("End Date", endDate))
 
 df = df[(df["Tanggal Setelmen/Settlement Date"]>= date1) & (df["Tanggal Setelmen/Settlement Date"] <= date2)].copy()
+
+st.sidebar.header("Choose your filter: ")
+kategori  = st.sidebar.multiselect("Pilih kategori", df["Kategori"].unique())
 
 # Display the DataFrame
 #st.write(f"Menampilkan {min(len(df), 100)} baris pertama dari total {len(df)} baris.")
