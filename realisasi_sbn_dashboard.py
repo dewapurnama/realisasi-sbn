@@ -135,26 +135,35 @@ bids_by_month['Bid to cover ratio'] = bids_by_month['Bid to cover ratio'].fillna
 
 with col2:
     # Create the figure with the two bar traces
-    fig = go.Figure(data=[
-        go.Bar(name='Incoming Bid', x=bids_by_month["Month_Name"], y=bids_by_month["Total Penawaran/ Incoming Bid"]),
-        go.Bar(name='Awarded Bid', x=bids_by_month["Month_Name"], y=bids_by_month["Total Penawaran Diterima/ Awarded Bid"]),
-        # Add a line trace for average Bid to Cover Ratio
-        go.Scatter(
-            name='Average Bid to Cover Ratio',
-            x=bids_by_month["Month_Name"],
-            y=bids_by_month["Bid to cover ratio"],  # Use the Bid to Cover Ratio for the y-values
-            mode='lines+markers',  # Display as line with markers
-            line=dict(color='red', width=2),  # Customize the line color and width
-            marker=dict(size=8)  # Customize the marker size
-        )
-    ])
+    fig = go.Figure()
+
+    # Add bar traces for Incoming and Awarded Bids
+    fig.add_trace(go.Bar(name='Incoming Bid', x=bids_by_month["Month_Name"], y=bids_by_month["Total Penawaran/ Incoming Bid"]))
+    fig.add_trace(go.Bar(name='Awarded Bid', x=bids_by_month["Month_Name"], y=bids_by_month["Total Penawaran Diterima/ Awarded Bid"]))
     
+    # Add a line trace for average Bid to Cover Ratio on a secondary y-axis
+    fig.add_trace(go.Scatter(
+        name='Average Bid to Cover Ratio',
+        x=bids_by_month["Month_Name"],
+        y=bids_by_month["Bid to cover ratio"],  # Use the Bid to Cover Ratio for the y-values
+        mode='lines+markers',  # Display as line with markers
+        line=dict(color='red', width=2),  # Customize the line color and width
+        marker=dict(size=8),  # Customize the marker size
+        yaxis='y2'  # Use secondary y-axis
+    ))
+
     # Update layout (group bars and add titles)
     fig.update_layout(
         barmode='group',
         title="Monthly Incoming vs Awarded Bids (Aggregated Across Years)",
         xaxis_title="Month",
         yaxis_title="Bid Amount",
+        yaxis2=dict(
+            title='Bid to Cover Ratio',
+            overlaying='y',  # Overlay on the main y-axis
+            side='right',  # Position on the right side
+            showgrid=False  # Disable grid lines for clarity
+        ),
         legend_title="Bid Type",
         height=500,  # Adjust height of the chart
         xaxis={'categoryorder':'array', 'categoryarray':month_names},  # Ensure correct month order
