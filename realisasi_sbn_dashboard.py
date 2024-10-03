@@ -26,7 +26,7 @@ gdown.download(url, output, quiet=False)
 df = pd.read_excel(output)
 
 #filter tanggal
-col1, col2 = st.column((2))
+col1, col2 = st.columns((2))
 df["Tanggal Setelmen/Settlement Date"] = pd.to_datetime(df["Tanggal Setelmen/Settlement Date"])
 startDate = pd.to_datetime(df["Tanggal Setelmen/Settlement Date"]).min()
 endDate = pd.to_datetime(df["Tanggal Setelmen/Settlement Date"]).max()
