@@ -77,6 +77,8 @@ with col1:
     text=[f'{x:,.2f}' for x in top10_incoming_by_series["Total Penawaran/ Incoming Bid"]],
     template="seaborn", orientation="h"
   )
+  # Reverse the y-axis
+  fig.update_layout(yaxis={'categoryorder':'total ascending'})
   st.plotly_chart(fig, use_container_width=True, height=200)
 
 # Display the DataFrame
