@@ -145,7 +145,14 @@ with col2:
     yaxis_title="Bid Amount",
     legend_title="Bid Type",
     height=500,  # Adjust this value to change the height of the chart
-    xaxis={'categoryorder':'array', 'categoryarray':month_names}  # This ensures correct month order
+    xaxis={'categoryorder':'array', 'categoryarray':month_names}  # This ensures correct month order,
+    legend=dict(
+        orientation="h",  # Horizontal legend
+        yanchor="bottom",  # Anchor the legend at the bottom of the space allocated to the legend
+        y=1,  # Place it at the top (y=1 means top, y=0 is bottom)
+        xanchor="center",  # Center the legend horizontally
+        x=0.5  # Place it in the center of the x-axis
+    )
   )
   # Add value labels on the bars
   for trace in fig.data:
