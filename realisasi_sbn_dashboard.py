@@ -90,19 +90,72 @@ way_by_series["WAY Awarded"] = pd.to_numeric(way_by_series["WAY Awarded"], error
 # Sort the DataFrame by 'WAY Awarded' in ascending order
 top10_way_by_series = way_by_series.sort_values(by="WAY Awarded", ascending=False).head(10)
 
-with col2:
-    st.subheader("WAY Awarded by Series")
-    fig = px.bar(
-        top10_way_by_series, 
-        x="WAY Awarded", 
-        y="Seri/Series", 
-        text=[f'{x:.4f}' for x in top10_way_by_series["WAY Awarded"]],
-        template="seaborn", 
-        orientation="h"
-    )
+#with col2:
+    #st.subheader("WAY Awarded by Series")
+    #fig = px.bar(
+        #top10_way_by_series, 
+        #x="WAY Awarded", 
+        #y="Seri/Series", 
+        #text=[f'{x:.4f}' for x in top10_way_by_series["WAY Awarded"]],
+        #template="seaborn", 
+        #orientation="h"
+    #)
     
-    fig.update_layout(yaxis={'categoryorder':'total ascending'})
-    st.plotly_chart(fig, use_container_width=True, height=200)
+    #fig.update_layout(yaxis={'categoryorder':'total ascending'})
+    #st.plotly_chart(fig, use_container_width=True, height=200)
+
+import plotly.graph_objects as go
+
+# Ensure the date column is in datetime format
+filtered_df['Tanggal Setelmen/Settlement Date'] = pd.to_datetime(filtered_df['Tanggal Setelmen/Settlement Date'], errors='coerce')
+
+# Ensure both bid columns are numeric
+filtered_df["Total Penawaran/ Incoming Bid"] = pd.to_numeric(filtered_df["Total Penawaran/ Incoming Bid"], errors='coerce')
+filtered_df["Total Penawaran Diterima/ Awarded Bid"] = pd.to_numeric(filtered_df["Total Penawaran Diterima/ Awarded Bid"], errors='coerce')
+
+# Group by month and calculate the sum of both 'Incoming Bid' and 'Awarded Bid'
+bids_by_month = filtered_df.groupby(filtered_df['Tanggal Setelmen/Settlement Date'].dt.to_period("M")).agg({
+    "Total Penawaran/ Incoming Bid": "sum",
+    "Total Penawaran Diterima/ Awarded Bid": "sum"
+}).reset_index()
+
+# Convert Period to datetime for better plotting
+bids_by_month['Tanggal Setelmen/Settlement Date'] = bids_by_month['Tanggal Setelmen/Settlement Date'].dt.to_timestamp()
+# Sort by date
+bids_by_month = bids_by_month.sort_values('Tanggal Setelmen/Settlement Date')
+
+# Create the bar chart
+with col2:
+  fig = go.Figure(data=[
+    go.Bar(name='Incoming Bid', x=bids_by_month["Tanggal Setelmen/Settlement Date"], y=bids_by_month["Total Penawaran/ Incoming Bid"]),
+    go.Bar(name='Awarded Bid', x=bids_by_month["Tanggal Setelmen/Settlement Date"], y=bids_by_month["Total Penawaran Diterima/ Awarded Bid"])
+  ])
+  fig.update_layout(
+    barmode='group',
+    title="Monthly Incoming vs Awarded Bids",
+    xaxis_title="Month",
+    yaxis_title="Bid Amount",
+    legend_title="Bid Type",
+    height=500  # Adjust this value to change the height of the chart
+  )
+  # Format x-axis to show month and year
+  fig.update_xaxes(
+    tickformat="%b %Y",
+    tickangle=45,
+    tickmode='auto',
+    nticks=20
+  )
+  # Add value labels on the bars
+  for trace in fig.data:
+    fig.add_traces(go.Scatter(
+        x=[b for b in trace.x], 
+        y=trace.y,
+        mode='text',
+        text=[f'{y:,.0f}' for y in trace.y],
+        textposition='outside',
+        showlegend=False
+    ))
+    st.plotly_chart(fig, use_container_width=True)
   
 # Display the DataFrame
 #st.write(f"Menampilkan {min(len(df), 100)} baris pertama dari total {len(df)} baris.")
