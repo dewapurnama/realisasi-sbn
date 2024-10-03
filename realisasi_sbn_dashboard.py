@@ -49,7 +49,7 @@ series = st.sidebar.multiselect("Series", df2["Seri/Series"].unique())
 if not series:
   df3 = df2.copy()
 else:
-  df3 = df2[df2["State"].isin(series)]
+  df3 = df2[df2["Seri/Series"].isin(series)]
 
 # Display the DataFrame
 #st.write(f"Menampilkan {min(len(df), 100)} baris pertama dari total {len(df)} baris.")
