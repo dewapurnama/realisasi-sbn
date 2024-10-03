@@ -62,6 +62,7 @@ else:
   filtered_df = df3[df3["Kategori"].isin(kategori) & df3["Seri/Series"].isin(series)]
 
 incoming_by_series = filtered_df.groupby(by = ["Seri/Series"], as_index = False)["Total Penawaran/ Incoming Bid"].sum()
+incoming_by_series["Total Penawaran/ Incoming Bid"] = pd.to_numeric(incoming_by_series["Total Penawaran/ Incoming Bid"], errors='coerce')
 
 with col1:
   st.subheader("Incoming Bid by Series")
