@@ -106,6 +106,6 @@ with col2:
   
 # Display the DataFrame
 #st.write(f"Menampilkan {min(len(df), 100)} baris pertama dari total {len(df)} baris.")
-st.dataframe(way_by_series.head(100))
+st.dataframe(filtered_df_way.head(100))
 st.dataframe(df.head(100))
 st.dataframe(filtered_df.head(100))
