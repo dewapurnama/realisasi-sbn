@@ -28,7 +28,7 @@ df = pd.read_excel(output)
 #filter tanggal
 col1, col2 = st.columns((2))
 df["Tanggal Setelmen/Settlement Date"] = pd.to_datetime(df["Tanggal Setelmen/Settlement Date"])
-startDate = pd.to_datetime(df["Tanggal Setelmen/Settlement Date"]).min()
+startDate = pd.to_datetime('2024-01-01')
 endDate = pd.to_datetime(df["Tanggal Setelmen/Settlement Date"]).max()
 
 with col1:
@@ -40,4 +40,4 @@ df = df[(df["Tanggal Setelmen/Settlement Date"]>= date1) & (df["Tanggal Setelmen
 
 # Display the DataFrame
 #st.write(f"Menampilkan {min(len(df), 100)} baris pertama dari total {len(df)} baris.")
-#st.dataframe(df.head(100))
+st.dataframe(df.head(100))
