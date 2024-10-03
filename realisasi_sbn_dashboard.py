@@ -16,7 +16,7 @@ st.title(":bar_chart: Dashboard Realisasi SBN DJPPR")
 st.markdown('<style>div.block-container{padding-top:1rem;}</style', unsafe_allow_html=True)
 
 # Replace the following URL with your own Google Drive file shareable link
-url = 'https://drive.google.com/uc?id=1mtKjIYLvxmBClIx2qeZ7KGXW0dGcEFjU'
+url = 'https://drive.google.com/uc?id=17QpxMTET-d9JQCpgSTD1MT6AIPuGfopW'
 
 # Download the file
 output = 'realisasi_sbn_sampai_2023.xlsx'
