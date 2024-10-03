@@ -74,10 +74,6 @@ fig = px.bar(
     text=[f'{x:,.2f}' for x in incoming_by_series["Total Penawaran/ Incoming Bid"]],
     template="seaborn"# Format as currency with commas and 2 decimal places
 )
-
-# Show the figure
-fig.show()
-
   st.plotly_chart(fig, use_container_width=True, height=200)
 
 # Display the DataFrame
