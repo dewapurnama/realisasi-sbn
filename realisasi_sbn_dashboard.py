@@ -106,6 +106,9 @@ top10_way_by_series = way_by_series.sort_values(by="WAY Awarded", ascending=Fals
 
 import plotly.graph_objects as go
 
+import plotly.graph_objects as go
+import pandas as pd
+
 # Ensure the date column is in datetime format
 filtered_df['Tanggal Setelmen/Settlement Date'] = pd.to_datetime(filtered_df['Tanggal Setelmen/Settlement Date'], errors='coerce')
 
@@ -113,47 +116,47 @@ filtered_df['Tanggal Setelmen/Settlement Date'] = pd.to_datetime(filtered_df['Ta
 filtered_df["Total Penawaran/ Incoming Bid"] = pd.to_numeric(filtered_df["Total Penawaran/ Incoming Bid"], errors='coerce')
 filtered_df["Total Penawaran Diterima/ Awarded Bid"] = pd.to_numeric(filtered_df["Total Penawaran Diterima/ Awarded Bid"], errors='coerce')
 
-# Group by month and calculate the sum of both 'Incoming Bid' and 'Awarded Bid'
-bids_by_month = filtered_df.groupby(filtered_df['Tanggal Setelmen/Settlement Date'].dt.to_period("M")).agg({
+# Group by month (ignoring year) and calculate the sum of both 'Incoming Bid' and 'Awarded Bid'
+bids_by_month = filtered_df.groupby(filtered_df['Tanggal Setelmen/Settlement Date'].dt.month).agg({
     "Total Penawaran/ Incoming Bid": "sum",
     "Total Penawaran Diterima/ Awarded Bid": "sum"
 }).reset_index()
 
-# Convert Period to datetime for better plotting
-bids_by_month['Tanggal Setelmen/Settlement Date'] = bids_by_month['Tanggal Setelmen/Settlement Date'].dt.to_timestamp()
-# Sort by date
-bids_by_month = bids_by_month.sort_values('Tanggal Setelmen/Settlement Date')
+# Rename the month column
+bids_by_month = bids_by_month.rename(columns={'Tanggal Setelmen/Settlement Date': 'Month'})
 
-# Create the bar chart
+# Sort by month
+bids_by_month = bids_by_month.sort_values('Month')
+
+# Create a list of month names for x-axis labels
+month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+bids_by_month['Month_Name'] = bids_by_month['Month'].apply(lambda x: month_names[x-1])
+
 with col2:
   fig = go.Figure(data=[
-    go.Bar(name='Incoming Bid', x=bids_by_month["Tanggal Setelmen/Settlement Date"], y=bids_by_month["Total Penawaran/ Incoming Bid"]),
-    go.Bar(name='Awarded Bid', x=bids_by_month["Tanggal Setelmen/Settlement Date"], y=bids_by_month["Total Penawaran Diterima/ Awarded Bid"])
+    go.Bar(name='Incoming Bid', x=bids_by_month["Month_Name"], y=bids_by_month["Total Penawaran/ Incoming Bid"]),
+    go.Bar(name='Awarded Bid', x=bids_by_month["Month_Name"], y=bids_by_month["Total Penawaran Diterima/ Awarded Bid"])
   ])
+  # Change the bar mode and update layout
   fig.update_layout(
     barmode='group',
-    title="Monthly Incoming vs Awarded Bids",
+    title="Monthly Incoming vs Awarded Bids (Aggregated Across Years)",
     xaxis_title="Month",
     yaxis_title="Bid Amount",
     legend_title="Bid Type",
-    height=500  # Adjust this value to change the height of the chart
-  )
-  # Format x-axis to show month and year
-  fig.update_xaxes(
-    tickformat="%b %Y",
-    tickangle=45,
-    tickmode='auto',
-    nticks=20
+    height=500,  # Adjust this value to change the height of the chart
+    xaxis={'categoryorder':'array', 'categoryarray':month_names}  # This ensures correct month order
   )
   # Add value labels on the bars
   for trace in fig.data:
     y_values = trace.y
     text_positions = ['top center' if y >= 0 else 'bottom center' for y in y_values]
+    
     fig.add_traces(go.Scatter(
-        x=[b for b in trace.x], 
-        y=trace.y,
+        x=trace.x, 
+        y=y_values,
         mode='text',
-        text=[f'{y:,.0f}' for y in trace.y],
+        text=[f'{y:,.0f}' for y in y_values],
         textposition=text_positions,
         showlegend=False
     ))
