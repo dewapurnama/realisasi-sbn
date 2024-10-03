@@ -72,8 +72,8 @@ with col1:
   st.subheader("Incoming Bid by Series")
   fig = px.bar(
     top10_incoming_by_series, 
-    x="Seri/Series", 
-    y="Total Penawaran/ Incoming Bid", 
+    x="Total Penawaran/ Incoming Bid", 
+    y="Seri/Series", 
     text=[f'{x:,.2f}' for x in top10_incoming_by_series["Total Penawaran/ Incoming Bid"]],
     template="seaborn", orientation="h"
   )
