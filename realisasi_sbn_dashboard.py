@@ -160,7 +160,7 @@ with col2:
         textposition=text_positions,
         showlegend=False
     ))
-    st.plotly_chart(fig, use_container_width=True)
+  st.plotly_chart(fig, use_container_width=True)
   
 # Display the DataFrame
 #st.write(f"Menampilkan {min(len(df), 100)} baris pertama dari total {len(df)} baris.")
