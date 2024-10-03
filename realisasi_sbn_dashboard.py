@@ -64,16 +64,13 @@ incoming_by_series = filtered_df.groupby(by = ["Seri/Series"], as_index = False)
 
 with col1:
   st.subheader("Incoming Bid by Series")
- import plotly.express as px
-
-# Assuming `incoming_by_series` is your DataFrame and contains the necessary columns
-fig = px.bar(
+  fig = px.bar(
     incoming_by_series, 
     x="Seri/Series", 
     y="Total Penawaran/ Incoming Bid", 
     text=[f'{x:,.2f}' for x in incoming_by_series["Total Penawaran/ Incoming Bid"]],
     template="seaborn"# Format as currency with commas and 2 decimal places
-)
+  )
   st.plotly_chart(fig, use_container_width=True, height=200)
 
 # Display the DataFrame
