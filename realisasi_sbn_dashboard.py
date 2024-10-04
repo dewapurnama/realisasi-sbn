@@ -69,7 +69,7 @@ incoming_by_series["Total Penawaran/ Incoming Bid"] = pd.to_numeric(incoming_by_
 top10_incoming_by_series = incoming_by_series.sort_values(by="Total Penawaran/ Incoming Bid", ascending=False).head(10)
 
 with col1:
-  st.subheader("Incoming Bid by Series")
+  #st.subheader("Incoming Bid by Series")
   fig = px.bar(
     top10_incoming_by_series, 
     x="Total Penawaran/ Incoming Bid", 
@@ -100,7 +100,7 @@ way_by_series["WAY Awarded"] = pd.to_numeric(way_by_series["WAY Awarded"], error
 top10_way_by_series = way_by_series.sort_values(by="WAY Awarded", ascending=False).head(10)
 
 with col2:
-    st.subheader("WAY Awarded by Series")
+    #st.subheader("WAY Awarded by Series")
     fig = px.bar(
         top10_way_by_series, 
         x="WAY Awarded", 
