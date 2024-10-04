@@ -312,7 +312,7 @@ fig3 = px.treemap(filtered_df, path = ["Kategori", "Seri", "Seri/Series"], value
 
 fig3.update_layout(width=800, height=650)
 # Update layout to include title and sort the y-axis categories
-fig.update_layout(
+fig3.update_layout(
     title=dict(
         text="WAY Awarded by Series",
         x=0.5,  # Center the title horizontally
