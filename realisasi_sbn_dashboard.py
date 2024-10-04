@@ -125,6 +125,7 @@ with col2:
 
 import plotly.graph_objects as go
 
+cl1, cl2 = st.columns(2)
 # Ensure the date column is in datetime format
 filtered_df['Tanggal Setelmen/Settlement Date'] = pd.to_datetime(filtered_df['Tanggal Setelmen/Settlement Date'], errors='coerce')
 
@@ -152,7 +153,74 @@ bids_by_month['Month_Name'] = bids_by_month['Month'].apply(lambda x: month_names
 bids_by_month['Bid to cover ratio'] = bids_by_month["Total Penawaran/ Incoming Bid"] / bids_by_month["Total Penawaran Diterima/ Awarded Bid"]
 bids_by_month['Bid to cover ratio'] = bids_by_month['Bid to cover ratio'].fillna(0)  # Replace NaN with 0 if any division by zero occurs
 
-#with col2:
+with cl1:
+    #st.subheader("Incoming Bid by Series")
+    fig = go.Figure()
+
+    # Add bar traces for Incoming and Awarded Bids
+    fig.add_trace(go.Bar(name='Incoming Bid', x=bids_by_month["Month_Name"], y=bids_by_month["Total Penawaran/ Incoming Bid"]))
+    fig.add_trace(go.Bar(name='Awarded Bid', x=bids_by_month["Month_Name"], y=bids_by_month["Total Penawaran Diterima/ Awarded Bid"]))
+
+    # Add a line trace for average Bid to Cover Ratio on a secondary y-axis
+    fig.add_trace(go.Scatter(
+        name='Average Bid to Cover Ratio',
+        x=bids_by_month["Month_Name"],
+        y=bids_by_month["Bid to cover ratio"],
+        mode='lines+markers',
+        line=dict(color='red', width=2),
+        marker=dict(size=8),
+        yaxis='y2'
+    ))
+
+    # Update layout
+    fig.update_layout(
+        barmode='group',
+        title=dict(
+            text="Monthly Incoming vs Awarded Bids (Aggregated Across Years)",
+            x=0.5,  # Center the title
+            y=0.95,  # Move title higher
+            xanchor='center',  # Center horizontally
+            yanchor='top',  # Anchor from the top
+            font=dict(size=18),  # Set title font size
+            pad=dict(b=40)  # Add padding between title and plot area
+        ),
+        xaxis_title="Month",
+        yaxis_title="Bid Amount",
+        yaxis2=dict(
+            title='Bid to Cover Ratio',
+            overlaying='y',
+            side='right',
+            showgrid=False
+        ),
+        height=500,
+        xaxis={'categoryorder':'array', 'categoryarray':month_names},
+        legend=dict(
+            orientation="h",  # Horizontal legend
+            yanchor="bottom",
+            y=1,  # Place it at the top
+            xanchor="center",
+            x=0.5,  # Center horizontally
+            valign="middle"  # Keep it vertically aligned in the middle
+        )
+    )
+
+    # Add value labels on the bars
+    for trace in fig.data:
+        y_values = trace.y
+        text_positions = ['top center' if y >= 0 else 'bottom center' for y in y_values]
+
+        fig.add_traces(go.Scatter(
+            x=trace.x, 
+            y=y_values,
+            mode='text',
+            text=[f'{y:,.0f}' for y in y_values],
+            textposition=text_positions,
+            showlegend=False  # Disable legend for text labels
+        ))
+
+    # Display the chart
+    st.plotly_chart(fig, use_container_width=True)
+
 
   
 # Display the DataFrame
