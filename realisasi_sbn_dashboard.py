@@ -78,7 +78,16 @@ with col1:
     template="seaborn", orientation="h"
   )
   # Reverse the y-axis
-  fig.update_layout(yaxis={'categoryorder':'total ascending'})
+  fig.update_layout(
+        yaxis={'categoryorder':'total ascending'},
+        title=dict(
+            text="Incoming Bid by Series",
+            x=0.5,  # Center the title horizontally
+            xanchor='center',  # Align the title at the center
+            font=dict(size=18),  # Set font size of the title
+            pad=dict(b=20)  # Add padding below the title
+        )
+    )
   st.plotly_chart(fig, use_container_width=True, height=200)
 
 # Convert 'WAY Awarded' to numeric, forcing non-numeric values to NaN, then filling NaN with 0
