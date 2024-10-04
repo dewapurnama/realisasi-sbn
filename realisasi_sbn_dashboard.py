@@ -311,6 +311,16 @@ fig3 = px.treemap(filtered_df, path = ["Kategori", "Seri", "Seri/Series"], value
                   hover_data=["Total Penawaran Diterima/ Awarded Bid"], color="Seri/Series", color_discrete_sequence=px.colors.qualitative.Pastel)
 
 fig3.update_layout(width=800, height=650)
+# Update layout to include title and sort the y-axis categories
+fig.update_layout(
+    title=dict(
+        text="WAY Awarded by Series",
+        x=0.5,  # Center the title horizontally
+        xanchor='center',  # Align the title at the center
+        font=dict(size=18),  # Set font size of the title
+        pad=dict(b=20)  # Add padding below the title
+    )
+)
 st.plotly_chart(fig3,use_container_width=True)
 
 # Display the DataFrame
