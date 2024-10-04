@@ -221,6 +221,80 @@ with cl1:
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
 
+filtered_df["WAY Awarded"] = pd.to_numeric(filtered_df["WAY Awarded"], errors='coerce')
+
+# Group by month (ignoring year) and calculate the sum of 'Incoming Bid' and average of 'WAY Awarded'
+bids_by_month = filtered_df.groupby(filtered_df['Tanggal Setelmen/Settlement Date'].dt.month).agg({
+    "Total Penawaran/ Incoming Bid": "sum",
+    "WAY Awarded": "mean"  # Use mean to calculate average of WAY Awarded
+}).reset_index()
+
+with cl2:
+    #st.subheader("Incoming Bid by Series")
+    fig = go.Figure()
+
+    # Add bar trace for Incoming Bids only
+    fig.add_trace(go.Bar(name='Incoming Bid', x=bids_by_month["Month_Name"], y=bids_by_month["Total Penawaran/ Incoming Bid"]))
+
+    # Add a line trace for average WAY Awarded on a secondary y-axis
+    fig.add_trace(go.Scatter(
+        name='Average WAY Awarded',
+        x=bids_by_month["Month_Name"],
+        y=bids_by_month["Average WAY Awarded"],  # Use WAY Awarded average for the y-values
+        mode='lines+markers',  # Display as line with markers
+        line=dict(color='blue', width=2),  # Customize the line color and width
+        marker=dict(size=8),  # Customize the marker size
+        yaxis='y2'  # Use secondary y-axis
+    ))
+
+    # Update layout
+    fig.update_layout(
+        barmode='group',
+        title=dict(
+            text="Monthly Incoming Bids and Average WAY Awarded (Aggregated Across Years)",
+            x=0.5,  # Center the title
+            y=0.95,  # Move title higher
+            xanchor='center',  # Center horizontally
+            yanchor='top',  # Anchor from the top
+            font=dict(size=18),  # Set title font size
+            pad=dict(b=40)  # Add padding between title and plot area
+        ),
+        xaxis_title="Month",
+        yaxis_title="Bid Amount",
+        yaxis2=dict(
+            title='WAY Awarded',
+            overlaying='y',
+            side='right',
+            showgrid=False
+        ),
+        height=500,
+        xaxis={'categoryorder':'array', 'categoryarray':month_names},
+        legend=dict(
+            orientation="h",  # Horizontal legend
+            yanchor="bottom",
+            y=1,  # Place it at the top
+            xanchor="center",
+            x=0.5,  # Center horizontally
+            valign="middle"  # Keep it vertically aligned in the middle
+        )
+    )
+
+    # Add value labels on the bars
+    for trace in fig.data:
+        y_values = trace.y
+        text_positions = ['top center' if y >= 0 else 'bottom center' for y in y_values]
+
+        fig.add_traces(go.Scatter(
+            x=trace.x, 
+            y=y_values,
+            mode='text',
+            text=[f'{y:,.0f}' for y in y_values],
+            textposition=text_positions,
+            showlegend=False  # Disable legend for text labels
+        ))
+
+    # Display the chart
+    st.plotly_chart(fig, use_container_width=True)
 
   
 # Display the DataFrame
