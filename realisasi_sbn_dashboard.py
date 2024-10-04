@@ -306,7 +306,13 @@ with cl2:
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
 
-  
+st.subheader("Hierarchical view of SBN Series")
+fig3 = px.treemap(filtered_df, path = ["Kategori", "Seri", "Seri/Series"], values = "Total Penawaran Diterima/ Awarded Bid", hover_data["Total Penawaran Diterima/ Awarded Bid"],
+                  color="Seri/Series")
+
+fig3.update_layout(width=800, height=650)
+st.plotly_chart(fig3,use_container_width=True)
+
 # Display the DataFrame
 #st.write(f"Menampilkan {min(len(df), 100)} baris pertama dari total {len(df)} baris.")
 st.dataframe(bids_by_month.head(100))
