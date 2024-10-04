@@ -155,7 +155,15 @@ with col2:
     # Update layout
     fig.update_layout(
         barmode='group',
-        title="Monthly Incoming vs Awarded Bids (Aggregated Across Years)",
+        title=dict(
+            text="Monthly Incoming vs Awarded Bids (Aggregated Across Years)",
+            x=0.5,  # Center the title
+            y=0.95,  # Move title higher
+            xanchor='center',  # Center horizontally
+            yanchor='top',  # Anchor from the top
+            font=dict(size=18),  # Set title font size
+            pad=dict(b=40)  # Add padding between title and plot area
+        ),
         xaxis_title="Month",
         yaxis_title="Bid Amount",
         yaxis2=dict(
@@ -169,10 +177,10 @@ with col2:
         legend=dict(
             orientation="h",  # Horizontal legend
             yanchor="bottom",
-            y=1,  # Top of the plot
+            y=1,  # Place it at the top
             xanchor="center",
-            x=0.5,  # Centered horizontally
-            valign="middle"  # Ensure middle alignment to prevent vertical stacking
+            x=0.5,  # Center horizontally
+            valign="middle"  # Keep it vertically aligned in the middle
         )
     )
 
