@@ -306,7 +306,7 @@ with cl2:
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
 
-st.subheader("Hierarchical view of SBN Series")
+#st.subheader("Hierarchical view of SBN Series")
 fig3 = px.treemap(filtered_df, path = ["Kategori", "Seri", "Seri/Series"], values = "Total Penawaran Diterima/ Awarded Bid", 
                   hover_data=["Total Penawaran Diterima/ Awarded Bid"], color="Seri/Series", color_discrete_sequence=px.colors.qualitative.Pastel)
 
@@ -318,7 +318,7 @@ fig3.update_layout(
         x=0.5,  # Center the title horizontally
         xanchor='center',  # Align the title at the center
         font=dict(size=18),  # Set font size of the title
-        pad=dict(b=20)  # Add padding below the title
+        pad=dict(b=10)  # Add padding below the title
     )
 )
 st.plotly_chart(fig3,use_container_width=True)
