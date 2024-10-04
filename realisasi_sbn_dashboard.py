@@ -221,12 +221,13 @@ with cl1:
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
 
+# Ensure the WAY Awarded column is numeric
 filtered_df["WAY Awarded"] = pd.to_numeric(filtered_df["WAY Awarded"], errors='coerce')
 
 # Group by month (ignoring year) and calculate the sum of 'Incoming Bid' and average of 'WAY Awarded'
 bids_by_month = filtered_df.groupby(filtered_df['Tanggal Setelmen/Settlement Date'].dt.month).agg({
     "Total Penawaran/ Incoming Bid": "sum",
-    "WAY Awarded": "mean"  # Use mean to calculate average of WAY Awarded
+    "WAY Awarded": "mean"  # Calculate the average of WAY Awarded
 }).reset_index()
 
 # Rename the month column
@@ -240,7 +241,6 @@ month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'O
 bids_by_month['Month_Name'] = bids_by_month['Month'].apply(lambda x: month_names[x-1])
 
 with cl2:
-    #st.subheader("Incoming Bid by Series")
     fig = go.Figure()
 
     # Add bar trace for Incoming Bids only
@@ -250,7 +250,7 @@ with cl2:
     fig.add_trace(go.Scatter(
         name='Average WAY Awarded',
         x=bids_by_month["Month_Name"],
-        y=bids_by_month["Average WAY Awarded"],  # Use WAY Awarded average for the y-values
+        y=bids_by_month["WAY Awarded"],  # Use WAY Awarded average (correct column name)
         mode='lines+markers',  # Display as line with markers
         line=dict(color='blue', width=2),  # Customize the line color and width
         marker=dict(size=8),  # Customize the marker size
