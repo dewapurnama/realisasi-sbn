@@ -101,7 +101,17 @@ with col2:
         orientation="h"
     )
     
-    fig.update_layout(yaxis={'categoryorder':'total ascending'})
+    # Update layout to include title and sort the y-axis categories
+    fig.update_layout(
+        yaxis={'categoryorder':'total ascending'},
+        title=dict(
+            text="WAY Awarded by Series",
+            x=0.5,  # Center the title horizontally
+            xanchor='center',  # Align the title at the center
+            font=dict(size=18),  # Set font size of the title
+            pad=dict(b=20)  # Add padding below the title
+        )
+    )
     st.plotly_chart(fig, use_container_width=True, height=200)
 
 import plotly.graph_objects as go
