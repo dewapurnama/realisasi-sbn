@@ -164,7 +164,7 @@ with col2:
             side='right',  # Position on the right side
             showgrid=False  # Disable grid lines for clarity
         ),
-        legend_title="Bid Type",
+        #legend_title="Bid Type",
         height=500,  # Adjust height of the chart
         xaxis={'categoryorder':'array', 'categoryarray':month_names},  # Ensure correct month order
         legend=dict(
