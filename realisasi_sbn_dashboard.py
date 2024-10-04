@@ -229,6 +229,16 @@ bids_by_month = filtered_df.groupby(filtered_df['Tanggal Setelmen/Settlement Dat
     "WAY Awarded": "mean"  # Use mean to calculate average of WAY Awarded
 }).reset_index()
 
+# Rename the month column
+bids_by_month = bids_by_month.rename(columns={'Tanggal Setelmen/Settlement Date': 'Month'})
+
+# Sort by month
+bids_by_month = bids_by_month.sort_values('Month')
+
+# Create a list of month names for x-axis labels
+month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+bids_by_month['Month_Name'] = bids_by_month['Month'].apply(lambda x: month_names[x-1])
+
 with cl2:
     #st.subheader("Incoming Bid by Series")
     fig = go.Figure()
