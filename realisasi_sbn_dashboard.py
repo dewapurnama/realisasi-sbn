@@ -314,7 +314,7 @@ fig3.update_layout(width=800, height=650)
 # Update layout to include title and sort the y-axis categories
 fig3.update_layout(
     title=dict(
-        text="WAY Awarded by Series",
+        text="Hierarchical view of SBN Series",
         x=0.5,  # Center the title horizontally
         xanchor='center',  # Align the title at the center
         font=dict(size=18),  # Set font size of the title
