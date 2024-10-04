@@ -318,13 +318,13 @@ fig3.update_layout(
         x=0.5,  # Center the title horizontally
         xanchor='center',  # Align the title at the center
         font=dict(size=18),  # Set font size of the title
-        pad=dict(b=10)  # Add padding below the title
+        pad=dict(b=5)  # Add padding below the title
     )
 )
 st.plotly_chart(fig3,use_container_width=True)
 
 # Display the DataFrame
 #st.write(f"Menampilkan {min(len(df), 100)} baris pertama dari total {len(df)} baris.")
-st.dataframe(bids_by_month.head(100))
-st.dataframe(df.head(100))
+#st.dataframe(bids_by_month.head(100))
+#st.dataframe(df.head(100))
 st.dataframe(filtered_df.head(100))
