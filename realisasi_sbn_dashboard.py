@@ -308,7 +308,7 @@ with cl2:
 
 st.subheader("Hierarchical view of SBN Series")
 fig3 = px.treemap(filtered_df, path = ["Kategori", "Seri", "Seri/Series"], values = "Total Penawaran Diterima/ Awarded Bid", 
-                  hover_data=["Total Penawaran Diterima/ Awarded Bid"], color="Seri/Series")
+                  hover_data=["Total Penawaran Diterima/ Awarded Bid"], color="Seri/Series", color_discrete_sequence=px.colors.qualitative.Pastel)
 
 fig3.update_layout(width=800, height=650)
 st.plotly_chart(fig3,use_container_width=True)
