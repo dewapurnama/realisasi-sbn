@@ -81,7 +81,29 @@ if data_baru is not None:
     df_cleaned = remove_total_rows(df_baru)
     df_filled = forward_fill_columns(df_cleaned, columns_to_fill)
     result_df = fill_na_with_first_row(df_filled, group_col, fill_cols)
-    st.dataframe(result_df.head(100))
+
+    # Rename specific columns
+    result_df.rename(columns={'Tanggal Setelmen/\nSettlement Date': 'Tanggal Setelmen/Settlement Date', 
+                               'Total Penawaran Diterima/ \nAwarded Bid': 'Total Penawaran Diterima/ Awarded Bid'}, inplace=True)
+    columns_to_check = [
+    'Tanggal Lelang/\nPricing Date',
+    'Tanggal Setelmen/Settlement Date',
+    'Metode Penerbitan/ Issuance Method',
+    'Seri/Series',
+    'Jatuh \nTempo/Maturity Date',
+    'Kupon/Imbalan - Coupon'
+    ]
+
+    # Drop the first occurrence of duplicates based on the specified columns
+    df_dropped = result_df[~result_df.duplicated(subset=columns_to_check, keep='last')]
+
+    # List of keywords to check for
+    keywords = ['SW', 'ST', 'SR', 'SPNS', 'PBS', 'SNI']
+    
+    # Create a new column based on the condition
+    df_dropped['Kategori'] = df_dropped['Seri/Series'].apply(lambda x: 'SBSN' if any(keyword in x for keyword in keywords) else 'SBN')
+    df_dropped['Seri'] = df_dropped['Seri/Series'].str.extract(r'([A-Za-z]+)')
+    st.dataframe(df_dropped.head(100))
     
 # Replace the following URL with your own Google Drive file shareable link
 url = 'https://drive.google.com/uc?id=17QpxMTET-d9JQCpgSTD1MT6AIPuGfopW'
