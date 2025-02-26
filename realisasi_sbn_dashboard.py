@@ -17,8 +17,72 @@ st.title(":bar_chart: Dashboard Realisasi SBN DJPPR")
 #st.markdown('<style>div.block-container{padding-top:1rem;}</style', unsafe_allow_html=True)
 data_baru = st.file_uploader("Upload Data Terbaru Disini", type=['xls', 'xlsx'])
 if data_baru is not None:
-    df_brj = pd.read_excel(data_baru)
+    df_baru = pd.read_excel(data_baru)
 
+    # Define the function
+    def remove_total_rows(df):
+        """
+        Remove rows where any column contains 'total' or 'grand total' (case-insensitive).
+    
+        Parameters:
+        df (pd.DataFrame): The input DataFrame.
+    
+        Returns:
+        pd.DataFrame: The DataFrame with rows containing 'total' or 'grand total' removed.
+        """
+        return df[~df.apply(lambda row: row.astype(str).str.contains('t o t a l|g r a n d t o t a l|Total', case=False, regex=True).any(), axis=1)]
+
+    # Define the function
+    def forward_fill_columns(df, columns_to_fill):
+        """
+        Forward fill NaN values for specified columns in the DataFrame.
+    
+        Parameters:
+        df (pd.DataFrame): The input DataFrame.
+        columns_to_fill (list): List of column names to forward fill.
+    
+        Returns:
+        pd.DataFrame: The DataFrame with forward-filled columns.
+        """
+        # Create a copy of the DataFrame to avoid modifying the original
+        df_copy = df.copy()
+        
+        # Forward fill only the specified columns
+        df_copy.loc[:, columns_to_fill] = df_copy[columns_to_fill].fillna(method='ffill')
+        
+        return df_copy
+    
+    columns_to_fill = [
+        'Tanggal Lelang/\nPricing Date', 'Tanggal Setelmen/\nSettlement Date',
+        'Metode Penerbitan/ Issuance Method', 'Seri/Series', 
+        'Jatuh \nTempo/Maturity Date', 'Kupon/Imbalan - Coupon'
+    ]
+
+    # Define the function
+    def fill_na_with_first_row(df, group_col, fill_cols):
+        """
+        Fill NaN values in specified columns based on the first row within each group.
+    
+        Parameters:
+        df (pd.DataFrame): The input DataFrame.
+        group_col (str): The column name to group by.
+        fill_cols (list): The list of column names to fill NaN values.
+    
+        Returns:
+        pd.DataFrame: The DataFrame with NaN values filled.
+        """
+        df[fill_cols] = df.groupby(group_col)[fill_cols].transform(lambda x: x.ffill())
+        return df
+    
+    # Call the function
+    group_col='Seri/Series'
+    fill_cols=['Lowest Incoming Yield/Price', 'Highest Incoming Yield/Price', 'WAY Awarded', 'Highest Awarded Yield/Price', 'Bid to cover ratio']
+
+    df_cleaned = remove_total_rows(df_baru)
+    df_filled = forward_fill_columns(df_cleaned, columns_to_fill)
+    result_df = fill_na_with_first_row(df_filled, group_col, fill_cols)
+    st.dataframe(result_df.head(100))
+    
 # Replace the following URL with your own Google Drive file shareable link
 url = 'https://drive.google.com/uc?id=17QpxMTET-d9JQCpgSTD1MT6AIPuGfopW'
 
