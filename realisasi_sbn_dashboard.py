@@ -17,7 +17,7 @@ st.title(":bar_chart: Dashboard Realisasi SBN DJPPR")
 #st.markdown('<style>div.block-container{padding-top:1rem;}</style', unsafe_allow_html=True)
 data_baru = st.file_uploader("Upload Data Terbaru Disini", type=['xls', 'xlsx'])
 if data_baru is not None:
-    df_baru = pd.read_excel(data_baru)
+    df_baru = pd.read_excel(data_baru, sheet_name="SBN", header=2)
 
     # Define the function
     def remove_total_rows(df):
@@ -79,9 +79,9 @@ if data_baru is not None:
     fill_cols=['Lowest Incoming Yield/Price', 'Highest Incoming Yield/Price', 'WAY Awarded', 'Highest Awarded Yield/Price', 'Bid to cover ratio']
 
     df_cleaned = remove_total_rows(df_baru)
-    #df_filled = forward_fill_columns(df_cleaned, columns_to_fill)
-    #result_df = fill_na_with_first_row(df_filled, group_col, fill_cols)
-    st.dataframe(df_cleaned.head(100))
+    df_filled = forward_fill_columns(df_cleaned, columns_to_fill)
+    result_df = fill_na_with_first_row(df_filled, group_col, fill_cols)
+    st.dataframe(result_df.head(100))
     
 # Replace the following URL with your own Google Drive file shareable link
 url = 'https://drive.google.com/uc?id=17QpxMTET-d9JQCpgSTD1MT6AIPuGfopW'
