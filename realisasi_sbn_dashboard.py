@@ -107,7 +107,7 @@ if data_baru is not None:
     st.dataframe(df_dropped.head(100))
     
 # Replace the following URL with your own Google Drive file shareable link
-url = 'https://drive.google.com/uc?id=17QpxMTET-d9JQCpgSTD1MT6AIPuGfopW'
+url = 'https://drive.google.com/uc?export=download&id=17QpxMTET-d9JQCpgSTD1MT6AIPuGfopW'
 
 # Download the file
 output = 'realisasi_sbn_sampai_2023.xlsx'
