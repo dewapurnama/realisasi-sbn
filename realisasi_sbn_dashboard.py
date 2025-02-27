@@ -12,98 +12,98 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 import plotly.express as px
 
-st.set_page_config(page_title="Realisasi SBN", page_icon=":bar_chart:",layout="wide")
-st.title(":bar_chart: Dashboard Realisasi SBN DJPPR")
-#st.markdown('<style>div.block-container{padding-top:1rem;}</style', unsafe_allow_html=True)
-data_baru = st.file_uploader("Upload Data Terbaru Disini", type=['xls', 'xlsx'])
-if data_baru is not None:
-    df_baru = pd.read_excel(data_baru, sheet_name="SBN", header=2)
-
-    # Define the function
-    def remove_total_rows(df):
-        """
-        Remove rows where any column contains 'total' or 'grand total' (case-insensitive).
+    st.set_page_config(page_title="Realisasi SBN", page_icon=":bar_chart:",layout="wide")
+    st.title(":bar_chart: Dashboard Realisasi SBN DJPPR")
+    #st.markdown('<style>div.block-container{padding-top:1rem;}</style', unsafe_allow_html=True)
+    data_baru = st.file_uploader("Upload Data Terbaru Disini", type=['xls', 'xlsx'])
+    if data_baru is not None:
+        df_baru = pd.read_excel(data_baru, sheet_name="SBN", header=2)
     
-        Parameters:
-        df (pd.DataFrame): The input DataFrame.
-    
-        Returns:
-        pd.DataFrame: The DataFrame with rows containing 'total' or 'grand total' removed.
-        """
-        return df[~df.apply(lambda row: row.astype(str).str.contains('t o t a l|g r a n d t o t a l|Total', case=False, regex=True).any(), axis=1)]
-
-    # Define the function
-    def forward_fill_columns(df, columns_to_fill):
-        """
-        Forward fill NaN values for specified columns in the DataFrame.
-    
-        Parameters:
-        df (pd.DataFrame): The input DataFrame.
-        columns_to_fill (list): List of column names to forward fill.
-    
-        Returns:
-        pd.DataFrame: The DataFrame with forward-filled columns.
-        """
-        # Create a copy of the DataFrame to avoid modifying the original
-        df_copy = df.copy()
+        # Define the function
+        def remove_total_rows(df):
+            """
+            Remove rows where any column contains 'total' or 'grand total' (case-insensitive).
         
-        # Forward fill only the specified columns
-        df_copy.loc[:, columns_to_fill] = df_copy[columns_to_fill].fillna(method='ffill')
+            Parameters:
+            df (pd.DataFrame): The input DataFrame.
         
-        return df_copy
+            Returns:
+            pd.DataFrame: The DataFrame with rows containing 'total' or 'grand total' removed.
+            """
+            return df[~df.apply(lambda row: row.astype(str).str.contains('t o t a l|g r a n d t o t a l|Total', case=False, regex=True).any(), axis=1)]
     
-    columns_to_fill = [
-        'Tanggal Lelang/\nPricing Date', 'Tanggal Setelmen/\nSettlement Date',
-        'Metode Penerbitan/ Issuance Method', 'Seri/Series', 
-        'Jatuh \nTempo/Maturity Date', 'Kupon/Imbalan - Coupon'
-    ]
-
-    # Define the function
-    def fill_na_with_first_row(df, group_col, fill_cols):
-        """
-        Fill NaN values in specified columns based on the first row within each group.
+        # Define the function
+        def forward_fill_columns(df, columns_to_fill):
+            """
+            Forward fill NaN values for specified columns in the DataFrame.
+        
+            Parameters:
+            df (pd.DataFrame): The input DataFrame.
+            columns_to_fill (list): List of column names to forward fill.
+        
+            Returns:
+            pd.DataFrame: The DataFrame with forward-filled columns.
+            """
+            # Create a copy of the DataFrame to avoid modifying the original
+            df_copy = df.copy()
+            
+            # Forward fill only the specified columns
+            df_copy.loc[:, columns_to_fill] = df_copy[columns_to_fill].fillna(method='ffill')
+            
+            return df_copy
+        
+        columns_to_fill = [
+            'Tanggal Lelang/\nPricing Date', 'Tanggal Setelmen/\nSettlement Date',
+            'Metode Penerbitan/ Issuance Method', 'Seri/Series', 
+            'Jatuh \nTempo/Maturity Date', 'Kupon/Imbalan - Coupon'
+        ]
     
-        Parameters:
-        df (pd.DataFrame): The input DataFrame.
-        group_col (str): The column name to group by.
-        fill_cols (list): The list of column names to fill NaN values.
+        # Define the function
+        def fill_na_with_first_row(df, group_col, fill_cols):
+            """
+            Fill NaN values in specified columns based on the first row within each group.
+        
+            Parameters:
+            df (pd.DataFrame): The input DataFrame.
+            group_col (str): The column name to group by.
+            fill_cols (list): The list of column names to fill NaN values.
+        
+            Returns:
+            pd.DataFrame: The DataFrame with NaN values filled.
+            """
+            df[fill_cols] = df.groupby(group_col)[fill_cols].transform(lambda x: x.ffill())
+            return df
+        
+        # Call the function
+        group_col='Seri/Series'
+        fill_cols=['Lowest Incoming Yield/Price', 'Highest Incoming Yield/Price', 'WAY Awarded', 'Highest Awarded Yield/Price', 'Bid to cover ratio']
     
-        Returns:
-        pd.DataFrame: The DataFrame with NaN values filled.
-        """
-        df[fill_cols] = df.groupby(group_col)[fill_cols].transform(lambda x: x.ffill())
-        return df
+        df_cleaned = remove_total_rows(df_baru)
+        df_filled = forward_fill_columns(df_cleaned, columns_to_fill)
+        result_df = fill_na_with_first_row(df_filled, group_col, fill_cols)
     
-    # Call the function
-    group_col='Seri/Series'
-    fill_cols=['Lowest Incoming Yield/Price', 'Highest Incoming Yield/Price', 'WAY Awarded', 'Highest Awarded Yield/Price', 'Bid to cover ratio']
-
-    df_cleaned = remove_total_rows(df_baru)
-    df_filled = forward_fill_columns(df_cleaned, columns_to_fill)
-    result_df = fill_na_with_first_row(df_filled, group_col, fill_cols)
-
-    # Rename specific columns
-    result_df.rename(columns={'Tanggal Setelmen/\nSettlement Date': 'Tanggal Setelmen/Settlement Date', 
-                               'Total Penawaran Diterima/ \nAwarded Bid': 'Total Penawaran Diterima/ Awarded Bid'}, inplace=True)
-    columns_to_check = [
-    'Tanggal Lelang/\nPricing Date',
-    'Tanggal Setelmen/Settlement Date',
-    'Metode Penerbitan/ Issuance Method',
-    'Seri/Series',
-    'Jatuh \nTempo/Maturity Date',
-    'Kupon/Imbalan - Coupon'
-    ]
-
-    # Drop the first occurrence of duplicates based on the specified columns
-    df_dropped = result_df[~result_df.duplicated(subset=columns_to_check, keep='last')]
-
-    # List of keywords to check for
-    keywords = ['SW', 'ST', 'SR', 'SPNS', 'PBS', 'SNI']
+        # Rename specific columns
+        result_df.rename(columns={'Tanggal Setelmen/\nSettlement Date': 'Tanggal Setelmen/Settlement Date', 
+                                   'Total Penawaran Diterima/ \nAwarded Bid': 'Total Penawaran Diterima/ Awarded Bid'}, inplace=True)
+        columns_to_check = [
+        'Tanggal Lelang/\nPricing Date',
+        'Tanggal Setelmen/Settlement Date',
+        'Metode Penerbitan/ Issuance Method',
+        'Seri/Series',
+        'Jatuh \nTempo/Maturity Date',
+        'Kupon/Imbalan - Coupon'
+        ]
     
-    # Create a new column based on the condition
-    df_dropped['Kategori'] = df_dropped['Seri/Series'].apply(lambda x: 'SBSN' if any(keyword in x for keyword in keywords) else 'SBN')
-    df_dropped['Seri'] = df_dropped['Seri/Series'].str.extract(r'([A-Za-z]+)')
-    st.dataframe(df_dropped.head(100))
+        # Drop the first occurrence of duplicates based on the specified columns
+        df_dropped = result_df[~result_df.duplicated(subset=columns_to_check, keep='last')]
+    
+        # List of keywords to check for
+        keywords = ['SW', 'ST', 'SR', 'SPNS', 'PBS', 'SNI']
+        
+        # Create a new column based on the condition
+        df_dropped['Kategori'] = df_dropped['Seri/Series'].apply(lambda x: 'SBSN' if any(keyword in x for keyword in keywords) else 'SBN')
+        df_dropped['Seri'] = df_dropped['Seri/Series'].str.extract(r'([A-Za-z]+)')
+        st.dataframe(df_dropped.head(100))
     
     # Replace the following URL with your own Google Drive file shareable link
     url = 'https://drive.google.com/uc?id=17QpxMTET-d9JQCpgSTD1MT6AIPuGfopW'
