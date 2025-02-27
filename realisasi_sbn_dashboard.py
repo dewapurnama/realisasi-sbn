@@ -113,7 +113,9 @@ output = 'realisasi_sbn_sampai_2023.xlsx'
 gdown.download(url, output, quiet=False)
 
 # Read the Excel file into a pandas DataFrame
-df = pd.read_excel(output)
+df_drive = pd.read_excel(output)
+
+df = pd.concat([df_drive, df_dropped], ignore_index=True)
 
 #filter tanggal
 col1, col2 = st.columns((2))
