@@ -16,6 +16,7 @@ st.set_page_config(page_title="Realisasi SBN", page_icon=":bar_chart:",layout="w
 st.title(":bar_chart: Dashboard Realisasi SBN DJPPR")
 #st.markdown('<style>div.block-container{padding-top:1rem;}</style', unsafe_allow_html=True)
 data_baru = st.file_uploader("Upload Data Terbaru Disini", type=['xls', 'xlsx'])
+df_dropped=None
 if data_baru is not None:
     df_baru = pd.read_excel(data_baru, sheet_name="SBN", header=2)
 
