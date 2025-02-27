@@ -108,10 +108,10 @@ if data_baru is not None:
     st.dataframe(df_dropped.head(100))
     
 # Replace the following URL with your own Google Drive file shareable link
-#url = 'https://drive.google.com/uc?id=1_LeiYlhpLtDWR0ycdQ2gJ6_2tl7FZb_VUVNZ8F_0gVE'
+url = 'https://drive.google.com/uc?id=1_LeiYlhpLtDWR0ycdQ2gJ6_2tl7FZb_VUVNZ8F_0gVE'
 
 # Download the file
-#output = 'Realisasi SBN & SBSN.xlsx'
+output = 'Realisasi SBN & SBSN.xlsx'
 gdown.download(url, output, quiet=False)
 
 # Read the Excel file into a pandas DataFrame
