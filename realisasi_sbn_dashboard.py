@@ -108,10 +108,10 @@ if data_baru is not None:
     st.dataframe(df_dropped.head(100))
     
 # Replace the following URL with your own Google Drive file shareable link
-url = 'https://drive.google.com/uc?id=17QpxMTET-d9JQCpgSTD1MT6AIPuGfopW'
+url = 'https://drive.google.com/uc?id=1Jy_l7htgPvGIYTg8mR5Qp_J5lN-lV2id'
 
 # Download the file
-output = 'realisasi_sbn_sampai_2023.xlsx'
+output = 'realisasi_sbn_sampai_2024.xlsx'
 gdown.download(url, output, quiet=False)
 
 # Read the Excel file into a pandas DataFrame
