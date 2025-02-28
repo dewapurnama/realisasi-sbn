@@ -105,7 +105,7 @@ if data_baru is not None:
     # Create a new column based on the condition
     df_dropped['Kategori'] = df_dropped['Seri/Series'].apply(lambda x: 'SBSN' if any(keyword in x for keyword in keywords) else 'SBN')
     df_dropped['Seri'] = df_dropped['Seri/Series'].str.extract(r'([A-Za-z]+)')
-    st.dataframe(df_dropped.head(100))
+    #st.dataframe(df_dropped.head(100))
     
 # Replace the following URL with your own Google Drive file shareable link
 url = 'https://drive.google.com/uc?id=1Jy_l7htgPvGIYTg8mR5Qp_J5lN-lV2id'
@@ -122,7 +122,7 @@ df = pd.concat([df_drive, df_dropped], ignore_index=True)
 #filter tanggal
 col1, col2 = st.columns((2))
 df["Tanggal Setelmen/Settlement Date"] = pd.to_datetime(df["Tanggal Setelmen/Settlement Date"])
-startDate = pd.to_datetime('2023-01-01')
+startDate = pd.to_datetime('2016-01-01')
 endDate = pd.to_datetime(df["Tanggal Setelmen/Settlement Date"]).max()
 
 with col1:
